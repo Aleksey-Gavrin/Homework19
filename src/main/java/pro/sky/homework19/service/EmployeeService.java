@@ -1,5 +1,6 @@
 package pro.sky.homework19.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pro.sky.homework19.exeptions.BadRequestException;
 import pro.sky.homework19.exeptions.EmployeeAlreadyAddedException;
@@ -25,37 +26,48 @@ public class EmployeeService {
 
     final int MAX_EMPLOYEES = 15;
 
+    public boolean checkStringInput(String str) {
+        return StringUtils.isAlpha(str);
+    }
+
     public Employee addEmployee(String firstName, String lastName, double salary, int department) {
-        if (firstName.isBlank() || lastName.isBlank() || !firstName.matches("^[а-яА-я]+$") ||
-                !lastName.matches("^[а-яА-я]+$")) {
-            throw new BadRequestException();
-        }
         if (employeeMap.size() >= MAX_EMPLOYEES) {
             throw new EmployeeStorageIsFullException();
         }
-        Employee empl = new Employee(firstName, lastName, salary, department);
-        if (employeeMap.containsValue(empl)) {
+        if (checkStringInput(firstName) && checkStringInput(lastName)) {
+            String firstNameCapitalized = StringUtils.capitalize(firstName);
+            String lastNameCapitalized = StringUtils.capitalize(lastName);
+            Employee empl = new Employee(firstNameCapitalized, lastNameCapitalized, salary, department);
+            if (employeeMap.containsValue(empl)) {
             throw new EmployeeAlreadyAddedException();
-        } else {
+            } else {
             employeeMap.put(empl.getHashKey(), empl);
             return empl;
+            }
+        } else {
+            throw new BadRequestException();
         }
     }
 
     public Employee findEmployee(String firstName, String lastName) {
-        if (firstName.isBlank() || lastName.isBlank()) {
-            throw new BadRequestException();
-        }
-        String hashKey = (firstName + lastName).toLowerCase();
-        if (employeeMap.containsKey(hashKey)) {
-            return employeeMap.get(hashKey);
+        if (checkStringInput(firstName) && checkStringInput(lastName)) {
+            String hashKey = (firstName + lastName).toLowerCase();
+            if (employeeMap.containsKey(hashKey)) {
+                return employeeMap.get(hashKey);
+            } else {
+                throw new EmployeeNotFoundException();
+            }
         } else {
-            throw new EmployeeNotFoundException();
+            throw new BadRequestException();
         }
     }
     public Employee removeEmployee(String firstName, String lastName) {
-        Employee empl = findEmployee(firstName, lastName);
-        return employeeMap.remove(empl.getHashKey());
+        if (checkStringInput(firstName) && checkStringInput(lastName)) {
+            Employee empl = findEmployee(firstName, lastName);
+            return employeeMap.remove(empl.getHashKey());
+        } else {
+            throw new BadRequestException();
+        }
     }
     public Collection<Employee> printAll() {
         return Collections.unmodifiableCollection(employeeMap.values());
