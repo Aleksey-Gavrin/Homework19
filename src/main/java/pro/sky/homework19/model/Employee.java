@@ -1,5 +1,7 @@
 package pro.sky.homework19.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
 
 public class Employee {
@@ -9,8 +11,8 @@ public class Employee {
     private Integer department;
     private final String hashKey;
     public Employee (String firstName, String lastName, double salary, int department) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.firstName = StringUtils.capitalize(firstName.toLowerCase());
+        this.lastName = StringUtils.capitalize(lastName.toLowerCase());
         this.hashKey = (firstName + lastName).toLowerCase();
         this.salary = salary;
         this.department = department;
