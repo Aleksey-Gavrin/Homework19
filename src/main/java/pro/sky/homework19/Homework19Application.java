@@ -21,6 +21,7 @@ public class Homework19Application {
 		service.addEmployee("Даниил", "Титов", 87750, 5);
 		service.addEmployee("Давид", "Соловьев", 54400, 2);
 		service.addEmployee("Анастасия", "Анисимова", 83900, 3);
+
 		}
 
 }
